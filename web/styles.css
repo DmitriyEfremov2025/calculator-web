@@ -7,7 +7,7 @@ body {
 }
 
 .container {
-  max-width: 520px;
+  max-width: 460px;
   margin: 56px auto;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 24px;
@@ -54,8 +54,8 @@ label {
 
 input,
 button {
-  font-size: 20px;
-  padding: 14px 16px;
+  font-size: 18px;
+  padding: 12px 14px;
   border-radius: 14px;
 }
 
@@ -75,45 +75,56 @@ input:focus {
   gap: 10px;
 }
 
-.op-btn {
-  border: none;
-  background: #e2e8f0;
-  color: #0f172a;
-  font-weight: 700;
-  font-size: 28px;
-  min-height: 72px;
-  cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+.calculator {
+  margin-top: 10px;
 }
 
-.op-btn:hover {
+.screen {
+  min-height: 84px;
+  border-radius: 16px;
+  background: #0f172a;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 18px;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.key {
+  border: none;
+  min-height: 58px;
+  font-size: 24px;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #0f172a;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.key:hover {
   transform: translateY(-1px);
   background: #cbd5e1;
 }
 
-.op-btn.active {
-  background: #2563eb;
-  color: #fff;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+.key-op,
+.key-action {
+  background: #bfdbfe;
 }
 
-button {
-  width: 100%;
-  border: none;
+.key-eq {
   background: linear-gradient(90deg, #2563eb, #4f46e5);
   color: #fff;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-button:hover {
-  background: linear-gradient(90deg, #1d4ed8, #4338ca);
-}
-
-.submit-btn {
-  margin-top: 8px;
-  min-height: 68px;
-  font-size: 24px;
 }
 
 .result {
@@ -229,7 +240,14 @@ body.dark .op-btn {
   color: #e2e8f0;
 }
 
-body.dark .op-btn:hover {
+body.dark .key,
+body.dark .key-action,
+body.dark .key-op {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+body.dark .key:hover {
   background: #334155;
 }
 
@@ -243,6 +261,11 @@ body.dark .history-item {
 
 body.dark .result {
   background: #1d4ed8;
+}
+
+body.dark .screen {
+  background: #020617;
+  color: #f8fafc;
 }
 
 body.dark .history {

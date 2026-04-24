@@ -1,27 +1,21 @@
-const form = document.getElementById("calc-form");
+const screen = document.getElementById("screen");
 const result = document.getElementById("result");
-const opInput = document.getElementById("op");
-const rightInput = document.getElementById("right");
-const rightRow = document.getElementById("right-row");
-const operationButtons = document.querySelectorAll(".op-btn");
+const keypad = document.querySelector(".keypad");
 const themeToggle = document.getElementById("theme-toggle");
 const copyResultButton = document.getElementById("copy-result");
 const historyList = document.getElementById("history-list");
 const clearHistoryButton = document.getElementById("clear-history");
-
-const unaryOps = new Set(["square", "sqrt"]);
 const historyStorageKey = "calc_history_v1";
 
 let lastResultValue = null;
 let historyItems = [];
+let displayValue = "0";
+let firstOperand = null;
+let pendingOp = null;
+let replaceDisplay = false;
 
-function syncOperandVisibility() {
-  const isUnary = unaryOps.has(opInput.value);
-  rightRow.classList.toggle("hidden", isUnary);
-  rightInput.required = !isUnary;
-  if (isUnary) {
-    rightInput.value = "";
-  }
+function updateScreen() {
+  screen.textContent = displayValue;
 }
 
 function formatOperation(left, op, right, resultValue) {
@@ -33,6 +27,65 @@ function formatOperation(left, op, right, resultValue) {
     default:
       return `${left} ${op} ${right} = ${resultValue}`;
   }
+}
+
+function parseDisplay() {
+  return Number(displayValue);
+}
+
+function setDisplayFromNumber(value) {
+  displayValue = Number.isInteger(value) ? String(value) : String(Number(value.toFixed(8)));
+  updateScreen();
+}
+
+function appendDigit(digit) {
+  if (replaceDisplay) {
+    displayValue = digit === "." ? "0." : digit;
+    replaceDisplay = false;
+    updateScreen();
+    return;
+  }
+
+  if (digit === "." && displayValue.includes(".")) return;
+  if (displayValue === "0" && digit !== ".") {
+    displayValue = digit;
+  } else {
+    displayValue += digit;
+  }
+  updateScreen();
+}
+
+function clearAll() {
+  displayValue = "0";
+  firstOperand = null;
+  pendingOp = null;
+  replaceDisplay = false;
+  updateScreen();
+}
+
+function backspace() {
+  if (replaceDisplay) return;
+  if (displayValue.length <= 1) {
+    displayValue = "0";
+  } else {
+    displayValue = displayValue.slice(0, -1);
+  }
+  updateScreen();
+}
+
+async function apiCompute(left, op, right) {
+  const response = await fetch("/api/calc", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ left, right, op }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || "неизвестная ошибка");
+  }
+  return data.result;
 }
 
 function saveHistory() {
@@ -78,47 +131,87 @@ function loadHistory() {
   }
 }
 
-operationButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    opInput.value = button.dataset.op;
-    operationButtons.forEach((btn) => btn.classList.remove("active"));
-    button.classList.add("active");
-    syncOperandVisibility();
-  });
-});
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const left = Number(document.getElementById("left").value);
-  const op = opInput.value;
-  const right = unaryOps.has(op) ? 0 : Number(rightInput.value);
-
+async function applyUnary(op) {
+  const left = parseDisplay();
   try {
-    const response = await fetch("/api/calc", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ left, right, op }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      result.textContent = `Ошибка: ${data.error || "неизвестная ошибка"}`;
-      result.classList.add("error");
-      lastResultValue = null;
-      return;
-    }
-
-    result.textContent = `Результат: ${data.result}`;
+    const computed = await apiCompute(left, op, 0);
+    setDisplayFromNumber(computed);
+    result.textContent = `Результат: ${computed}`;
     result.classList.remove("error");
-    lastResultValue = data.result;
-    addHistoryItem(left, op, right, data.result);
+    lastResultValue = computed;
+    addHistoryItem(left, op, 0, computed);
+    replaceDisplay = true;
   } catch (error) {
-    result.textContent = "Ошибка сети. Попробуйте позже.";
+    result.textContent = `Ошибка: ${error.message}`;
     result.classList.add("error");
     lastResultValue = null;
+  }
+}
+
+function selectBinaryOp(op) {
+  firstOperand = parseDisplay();
+  pendingOp = op;
+  replaceDisplay = true;
+  result.textContent = `Выбрана операция: ${op}`;
+  result.classList.remove("error");
+}
+
+async function calculateResult() {
+  if (!pendingOp || firstOperand === null) return;
+  const right = parseDisplay();
+  try {
+    const computed = await apiCompute(firstOperand, pendingOp, right);
+    setDisplayFromNumber(computed);
+    result.textContent = `Результат: ${computed}`;
+    result.classList.remove("error");
+    lastResultValue = computed;
+    addHistoryItem(firstOperand, pendingOp, right, computed);
+    firstOperand = null;
+    pendingOp = null;
+    replaceDisplay = true;
+  } catch (error) {
+    result.textContent = `Ошибка: ${error.message}`;
+    result.classList.add("error");
+    lastResultValue = null;
+  }
+}
+
+keypad.addEventListener("click", async (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+  if (!target.classList.contains("key")) return;
+
+  const digit = target.dataset.digit;
+  const op = target.dataset.op;
+  const action = target.dataset.action;
+
+  if (digit) {
+    appendDigit(digit);
+    return;
+  }
+
+  if (op === "square" || op === "sqrt") {
+    await applyUnary(op);
+    return;
+  }
+
+  if (op) {
+    selectBinaryOp(op);
+    return;
+  }
+
+  if (action === "clear") {
+    clearAll();
+    return;
+  }
+
+  if (action === "backspace") {
+    backspace();
+    return;
+  }
+
+  if (action === "equals") {
+    await calculateResult();
   }
 });
 
@@ -146,8 +239,9 @@ historyList.addEventListener("click", (event) => {
 
   const value = Number(target.dataset.value);
   if (!Number.isNaN(value)) {
-    document.getElementById("left").value = String(value);
-    document.getElementById("left").focus();
+    displayValue = String(value);
+    replaceDisplay = true;
+    updateScreen();
   }
 });
 
@@ -165,8 +259,20 @@ themeToggle.addEventListener("click", () => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" && event.ctrlKey) {
-    form.requestSubmit();
+  if ((event.key >= "0" && event.key <= "9") || event.key === ".") {
+    appendDigit(event.key);
+    return;
+  }
+  if (event.key === "Backspace") {
+    backspace();
+    return;
+  }
+  if (event.key === "Escape") {
+    clearAll();
+    return;
+  }
+  if (event.key === "=" || event.key === "Enter") {
+    calculateResult();
   }
 });
 
@@ -178,4 +284,4 @@ if (storedTheme === "dark") {
 
 loadHistory();
 renderHistory();
-syncOperandVisibility();
+updateScreen();

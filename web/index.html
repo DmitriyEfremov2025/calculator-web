@@ -11,35 +11,42 @@
       <div class="top-bar">
         <div>
           <h1>Калькулятор</h1>
-          <p class="subtitle">Быстрые вычисления на Go + JavaScript</p>
+          <p class="subtitle">Один экран по центру и кнопки под ним</p>
         </div>
         <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">🌙</button>
       </div>
-      <form id="calc-form">
-        <div class="row">
-          <label for="left">Число</label>
-          <input id="left" type="number" step="any" required placeholder="Введите число" />
-        </div>
-        <div class="row">
-          <label>Операция</label>
-          <div class="operations" id="operations">
-            <button type="button" class="op-btn active" data-op="+">+</button>
-            <button type="button" class="op-btn" data-op="-">-</button>
-            <button type="button" class="op-btn" data-op="*">×</button>
-            <button type="button" class="op-btn" data-op="/">÷</button>
-            <button type="button" class="op-btn" data-op="square">x²</button>
-            <button type="button" class="op-btn" data-op="sqrt">√x</button>
-          </div>
-          <input id="op" type="hidden" value="+" />
-        </div>
-        <div class="row" id="right-row">
-          <label for="right">Второе число</label>
-          <input id="right" type="number" step="any" required placeholder="Введите второе число" />
-        </div>
-        <button type="submit" class="submit-btn">Вычислить</button>
-      </form>
 
-      <div id="result" class="result">Результат появится здесь</div>
+      <section class="calculator">
+        <div id="screen" class="screen">0</div>
+        <div class="keypad">
+          <button type="button" class="key key-action" data-action="clear">C</button>
+          <button type="button" class="key key-action" data-action="backspace">⌫</button>
+          <button type="button" class="key key-op" data-op="square">x²</button>
+          <button type="button" class="key key-op" data-op="sqrt">√x</button>
+
+          <button type="button" class="key key-number" data-digit="7">7</button>
+          <button type="button" class="key key-number" data-digit="8">8</button>
+          <button type="button" class="key key-number" data-digit="9">9</button>
+          <button type="button" class="key key-op" data-op="/">÷</button>
+
+          <button type="button" class="key key-number" data-digit="4">4</button>
+          <button type="button" class="key key-number" data-digit="5">5</button>
+          <button type="button" class="key key-number" data-digit="6">6</button>
+          <button type="button" class="key key-op" data-op="*">×</button>
+
+          <button type="button" class="key key-number" data-digit="1">1</button>
+          <button type="button" class="key key-number" data-digit="2">2</button>
+          <button type="button" class="key key-number" data-digit="3">3</button>
+          <button type="button" class="key key-op" data-op="-">−</button>
+
+          <button type="button" class="key key-number" data-digit="0">0</button>
+          <button type="button" class="key key-number" data-digit=".">.</button>
+          <button type="button" class="key key-eq" data-action="equals">=</button>
+          <button type="button" class="key key-op" data-op="+">+</button>
+        </div>
+      </section>
+
+      <div id="result" class="result">Готов к вычислениям</div>
       <div class="result-actions">
         <button id="copy-result" type="button" class="secondary-btn">Скопировать результат</button>
       </div>
