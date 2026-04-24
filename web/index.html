@@ -8,8 +8,13 @@
   </head>
   <body>
     <main class="container">
-      <h1>Калькулятор</h1>
-      <p class="subtitle">Быстрые вычисления на Go + JavaScript</p>
+      <div class="top-bar">
+        <div>
+          <h1>Калькулятор</h1>
+          <p class="subtitle">Быстрые вычисления на Go + JavaScript</p>
+        </div>
+        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">🌙</button>
+      </div>
       <form id="calc-form">
         <div class="row">
           <label for="left">Число</label>
@@ -34,7 +39,18 @@
         <button type="submit" class="submit-btn">Вычислить</button>
       </form>
 
-      <p id="result" class="result"></p>
+      <div id="result" class="result">Результат появится здесь</div>
+      <div class="result-actions">
+        <button id="copy-result" type="button" class="secondary-btn">Скопировать результат</button>
+      </div>
+
+      <section class="history">
+        <div class="history-header">
+          <h2>История вычислений</h2>
+          <button id="clear-history" type="button" class="secondary-btn">Очистить</button>
+        </div>
+        <ul id="history-list" class="history-list"></ul>
+      </section>
     </main>
     <script src="/app.js"></script>
   </body>
