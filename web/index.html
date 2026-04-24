@@ -9,25 +9,29 @@
   <body>
     <main class="container">
       <h1>Калькулятор</h1>
+      <p class="subtitle">Быстрые вычисления на Go + JavaScript</p>
       <form id="calc-form">
         <div class="row">
-          <label for="left">Число 1</label>
-          <input id="left" type="number" step="any" required />
+          <label for="left">Число</label>
+          <input id="left" type="number" step="any" required placeholder="Введите число" />
         </div>
         <div class="row">
-          <label for="op">Операция</label>
-          <select id="op" required>
-            <option value="+">+</option>
-            <option value="-">-</option>
-            <option value="*">*</option>
-            <option value="/">/</option>
-          </select>
+          <label>Операция</label>
+          <div class="operations" id="operations">
+            <button type="button" class="op-btn active" data-op="+">+</button>
+            <button type="button" class="op-btn" data-op="-">-</button>
+            <button type="button" class="op-btn" data-op="*">×</button>
+            <button type="button" class="op-btn" data-op="/">÷</button>
+            <button type="button" class="op-btn" data-op="square">x²</button>
+            <button type="button" class="op-btn" data-op="sqrt">√x</button>
+          </div>
+          <input id="op" type="hidden" value="+" />
         </div>
-        <div class="row">
-          <label for="right">Число 2</label>
-          <input id="right" type="number" step="any" required />
+        <div class="row" id="right-row">
+          <label for="right">Второе число</label>
+          <input id="right" type="number" step="any" required placeholder="Введите второе число" />
         </div>
-        <button type="submit">Вычислить</button>
+        <button type="submit" class="submit-btn">Вычислить</button>
       </form>
 
       <p id="result" class="result"></p>

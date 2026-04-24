@@ -15,7 +15,10 @@ func TestCompute(t *testing.T) {
 		{name: "sub", left: 7, right: 2, op: "-", want: 5},
 		{name: "mul", left: 4, right: 2.5, op: "*", want: 10},
 		{name: "div", left: 10, right: 4, op: "/", want: 2.5},
+		{name: "square", left: 6, right: 0, op: "square", want: 36},
+		{name: "sqrt", left: 9, right: 0, op: "sqrt", want: 3},
 		{name: "div by zero", left: 10, right: 0, op: "/", wantError: ErrDivisionByZero},
+		{name: "sqrt of negative number", left: -4, right: 0, op: "sqrt", wantError: ErrNegativeSqrtInput},
 		{name: "unknown op", left: 1, right: 1, op: "^", wantError: ErrInvalidOperator},
 	}
 
