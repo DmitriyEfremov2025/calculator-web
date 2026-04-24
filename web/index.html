@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Go Web Calculator</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Калькулятор</h1>
+      <form id="calc-form">
+        <div class="row">
+          <label for="left">Число 1</label>
+          <input id="left" type="number" step="any" required />
+        </div>
+        <div class="row">
+          <label for="op">Операция</label>
+          <select id="op" required>
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="right">Число 2</label>
+          <input id="right" type="number" step="any" required />
+        </div>
+        <button type="submit">Вычислить</button>
+      </form>
+
+      <p id="result" class="result"></p>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
